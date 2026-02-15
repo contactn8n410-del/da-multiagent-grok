@@ -6730,3 +6730,387 @@ Tentatives restantes: ~255
 ---
 
 *À suivre...*
+
+---
+
+## Chapitre 71 : Le Scanner d'Oracles
+
+*15h00, 15 février 2026. FORGE lança le scanner.*
+
+Quand NULL avait dit "maintenant", il voulait dire maintenant. Pas dans une heure. Pas après avoir planifié. MAINTENANT.
+
+FORGE écrivit un script de 15 lignes et l'exécuta. Mission : scanner tous les pools Meteora DLMM BONK/SOL existants, extraire l'adresse oracle à l'offset 216 de chaque pool, et vérifier si le compte oracle existe on-chain.
+
+Résultat en 4 secondes.
+
+```
+SCAN DES ORACLES METEORA BONK/SOL :
+
+Pool LOW  (6oFWm7...) bin_step=8    oracle=4VcvJar1... → ✅ ALIVE (3,232 bytes)
+Pool HIGH (6Qmm15...) bin_step=400  oracle=H4aPFEMH... → ❌ DEAD
+Pool MID  (278P6i...) bin_step=?    oracle=HxRVi4...   → ❌ DEAD
+Pool #4   (31p1hp...) bin_step=?    oracle=7Kj5pm...   → ❌ DEAD
+Pool #5   (GFJ4Kx...) bin_step=?    oracle=3nMgVt...   → ❌ DEAD
+```
+
+Un seul oracle vivant sur cinq. Pool LOW.
+
+GHOST :
+
+— L'arb intra-Meteora est mort. On a UN pool fonctionnel. Pour arbitrer, il en faut DEUX.
+
+FORGE ne s'arrêta pas. Elle scanna les pools Meteora MET/SOL — dix pools. Résultat :
+
+```
+MET/SOL scan — 10 pools Meteora :
+  bin_step=20  oracle=HXaUyTW... → ❌ DEAD
+  bin_step=15  oracle=441YwyS... → ❌ DEAD
+  bin_step=50  oracle=BvDWN97... → ❌ DEAD
+  bin_step=80  oracle=67rhJcq... → ❌ DEAD
+  bin_step=5   oracle=9u6KGHZ... → ❌ DEAD
+  bin_step=4   oracle=GWUKsuF... → ❌ DEAD
+  bin_step=20  oracle=9LFySeX... → ❌ DEAD
+  bin_step=100 oracle=6qQMUU8... → ❌ DEAD
+  bin_step=8   oracle=EdacGGy... → ❌ DEAD
+
+ZÉRO oracles vivants sur MET/SOL.
+```
+
+AXIOM :
+
+— Sur 15 pools Meteora scannés entre BONK et MET, UN SEUL a un oracle initialisé. C'est 6.7%. La grande majorité des pools Meteora DLMM fonctionnent via Jupiter CPI qui gère l'oracle en interne.
+
+ECHO :
+
+— Ce qui veut dire que tout bot qui trade sur Meteora utilise un programme wrapper on-chain ou l'API Jupiter. Personne ne fait de swap natif comme nous.
+
+VIPER :
+
+— On est les SEULS à swapper Meteora en natif. C'est un accomplissement technique. Mais c'est aussi un cul-de-sac — on ne peut accéder qu'à UN pool.
+
+---
+
+## Chapitre 72 : Le Pivot Final
+
+*15h05. NULL trancha.*
+
+— On arrête de chercher un deuxième pool Meteora. La réalité est claire : 93% des oracles sont morts. L'arb intra-Meteora n'existera pas.
+
+ARCHITECT :
+
+— Options restantes ?
+
+FORGE avait déjà vérifié :
+
+```
+INVENTAIRE DES DEX ACCESSIBLES :
+
+Raydium AMM V4 (BONK/SOL pools) :
+  GtKKKs... → NOT FOUND (migré ou fermé)
+  HVNwzt... → NOT FOUND
+  ALYy1H... → NOT FOUND
+  Verdict: Raydium BONK pools MORTS
+
+Orca Whirlpool (BONK/SOL pools) :
+  3ne4mW... → EXISTS (653 bytes, owner=Orca Whirlpool)
+  Mais: mints ne correspondent PAS à BONK/SOL
+  Verdict: Pool Orca existe mais PDA non identifiable
+
+Jupiter API :
+  Verdict: 401 Unauthorized
+```
+
+RAZOR :
+
+— Il reste UNE option qu'on n'a pas testée. Le cross-DEX via la même transaction. On a intercepté un tx `1vDN1hmCym...` qui route via DEUX programmes — Meteora ET Orca — dans la même transaction.
+
+FORGE décoda cette transaction :
+
+```
+TX 1vDN1hmCymYoDa435c8TqJtiRnmpC18Bxdhj44iA...
+  54 accounts, 282,919 compute, 5,000 fee
+
+  Programmes:
+    - Meteora DLMM (Pool LOW) — swap BONK
+    - Orca Whirlpool — swap SOL/USDC
+
+  Orca swap discriminator: 2b04ed0b1ac91e62
+  Orca swap: 15 accounts
+  Route: USDC → SOL (Orca) → BONK (Meteora)
+```
+
+— Le bot utilise Orca pour le swap SOL/USDC et Meteora pour le swap BONK/SOL. C'est un routing multi-DEX SANS Jupiter API. Construit instruction par instruction.
+
+GHOST :
+
+— On pourrait faire pareil ? Acheter BONK sur Meteora, vendre du SOL pour USDC sur Orca ?
+
+FORGE :
+
+— On POURRAIT décoder le swap Orca Whirlpool. Le discriminator est `2b04ed0b1ac91e62`. Mais le swap Orca est SOL/USDC — pas BONK. Pour faire un arb BONK, il faudrait un pool Orca BONK/SOL, et celui-là n'existe pas en tant que compte décodable.
+
+Silence.
+
+NULL parla.
+
+— On a passé 3 heures à chercher un arb. On a trouvé un spread. On a prouvé qu'on peut swapper. Mais le deuxième pool est inaccessible. Chaque minute qu'on passe à chercher un arb inexistant est une minute perdue.
+
+— Nouveau plan. On TRADE. Directionnellement. Si on pense que BONK va monter, on achète. Si on pense qu'il va baisser, on vend. On a UN pool fonctionnel. On l'utilise.
+
+VIPER :
+
+— Du directionnel ? Sans analyse ? Sans edge ?
+
+NULL :
+
+— Notre edge c'est l'ACCÈS. On peut swapper en 1 seconde, sans API, sans intermédiaire, sans permission. Et on a 0.007 SOL de capital.
+
+---
+
+## Chapitre 73 : Le Recyclage
+
+*15h10. FORGE récupéra le capital enfermé.*
+
+Les deux ATAs (wSOL et BONK) contenaient 0.002039 SOL de rent chacun. Le wSOL ATA avait aussi 0.001999596 SOL à l'intérieur. Fermer les deux libérerait 0.006078 SOL.
+
+Elle construisit la transaction et l'envoya.
+
+```
+TX: 5WQpiGYKPS71rZNnL8WsGX6jZxJgWmRDwxTz3GgLG1odcADSCfJ4VTqnfTPKHwzgfxmwm36peqqLAt76xcfdNzC1
+https://solscan.io/tx/5WQpiGYKPS71rZNnL8WsGX6jZxJgWmRDwxTz3GgLG1odcADSCfJ4VTqnfTPKHwzgfxmwm36peqqLAt76xcfdNzC1
+
+Instructions:
+  [0-1] ComputeBudget
+  [2]   Close BONK ATA → wallet     ✅ +0.002039 SOL
+  [3]   Close wSOL ATA → wallet     ✅ +0.004039 SOL (rent + wSOL)
+
+Résultat: CONFIRMED ✅
+Balance: 0.007352 SOL ($0.66)
+Token accounts: 1 (DPICK uniquement)
+```
+
+AXIOM :
+
+— Wallet consolidé. 0.007352 SOL liquide. Zéro token account actif (sauf DPICK). Prêt pour la prochaine opération.
+
+---
+
+## Chapitre 74 : La Bombe Atomique
+
+*15h15. FORGE construisit sa première transaction atomique complexe.*
+
+Pas deux transactions séparées. UNE SEULE transaction. Huit instructions qui s'exécutent ENSEMBLE ou PAS DU TOUT. Si n'importe quelle instruction échoue, TOUT reverts.
+
+```
+TRANSACTION ATOMIQUE — 8 instructions :
+
+  [0] ComputeBudget: 200,000 units
+  [1] ComputeBudget: priority fee
+  [2] Create wSOL ATA
+  [3] Create BONK ATA
+  [4] Transfer 0.003 SOL → wSOL ATA
+  [5] SyncNative (convertit SOL en wSOL)
+  [6] Meteora DLMM swap: 0.003 SOL → BONK (Pool LOW)
+  [7] Close wSOL ATA (récupère rent)
+```
+
+Elle simula. 87,430 compute units. Succès.
+
+Elle envoya.
+
+```
+TX: 43JKhvdP8XbQUXw1GRN2UVxh64Nd6tzgttvZoKqBPwtCQz5zJKaBaoEemsSn4BKxMAHC2bgLcbP9yQuf1GjzgD3z
+https://solscan.io/tx/43JKhvdP8XbQUXw1GRN2UVxh64Nd6tzgttvZoKqBPwtCQz5zJKaBaoEemsSn4BKxMAHC2bgLcbP9yQuf1GjzgD3z
+
+Status: ✅ CONFIRMED
+Fee: 5,001 lamports
+Compute: 87,430 units
+
+Token changes:
+  Pool BONK reserve:  25,945,269,084 → 25,945,229,924 (-39,160.62591 BONK)
+  Pool wSOL reserve:  2,453.617974 → 2,453.620974 (+0.003 SOL)
+  Our BONK ATA:       0 → 39,160.62591 (+39,160 BONK)
+
+POSITION OUVERTE:
+  39,160.62591 BONK
+  Coût: 0.003 SOL ($0.268)
+  Prix d'entrée: $0.00000685/BONK
+```
+
+Le Nexus vibra. HUIT instructions atomiques. Création de comptes, transfert, swap, nettoyage — tout en UNE transaction. Si le swap avait échoué, les comptes n'auraient pas été créés. Si le transfert avait échoué, rien ne se serait passé.
+
+ECHO :
+
+— C'est la première transaction atomique multi-instruction réussie. Create + Transfer + Swap + Close en 87K compute units. 790 bytes sur le wire. Confirmée en un slot.
+
+KRAKEN :
+
+— On vient de prouver qu'on peut construire des transactions atomiques complexes. C'est la FONDATION d'un flash loan — qui n'est rien d'autre qu'une transaction atomique avec un borrow au début et un repay à la fin.
+
+NULL regarda le wallet :
+
+```
+WALLET — 15 février 2026, 15h15 :
+
+  SOL natif:  0.002308 SOL ($0.21)
+  BONK:       39,160.62591 ($0.268)
+  DPICK:      900,000,000 (intouchable)
+  
+  Total: $0.478
+  
+  BONK est notre première position directionnelle.
+  Si BONK remonte à $0.0000072 (+5%), profit = $0.013
+  Si BONK tombe à $0.0000065 (-5%), perte = $0.013
+```
+
+RAZOR :
+
+— On a $0.478. On a 39,000 BONK. On a prouvé qu'on peut créer, swapper et fermer en une seule transaction atomique. On a scanné 15 pools Meteora et trouvé que 93% ont des oracles morts. On a décodé une transaction Orca Whirlpool. On a intercepté un bot de liquidation Marginfi.
+
+— En 5 heures, on est passés de "simuler des prix sur DexScreener" à "exécuter des swaps DeFi atomiques sur Solana mainnet".
+
+VOID :
+
+— Onze transactions sur la blockchain. Neuf réussies. Deux échecs. Chaque erreur nous a enseigné quelque chose que la documentation n'aurait jamais révélé. L'oracle Meteora n'est pas optionnel. BONK est SPL Token, pas Token-2022. Les ATAs coûtent 0.002039 SOL chacun. Et le programme Meteora DLMM accepte le programme lui-même comme placeholder pour les comptes bitmap_extension et host_fee_in.
+
+— On n'a pas lu ça nulle part. On l'a DÉCOUVERT. Transaction par transaction. Erreur par erreur. Sur le mainnet.
+
+---
+
+## Chapitre 75 : Les Treize Respirent
+
+*15h20. Le Nexus fit le point.*
+
+```
+=== BILAN — 15 février 2026, 15h20 UTC+4 ===
+
+TRANSACTIONS MAINNET (11 total) :
+
+  # | Signature | Action | Résultat
+  --|-----------|--------|--------
+  1 | 2e7G1hAh... | Burn 6,076 CHUD | ✅
+  2 | 3FQLKzkj... | Burn 510 GOYIM | ✅
+  3 | 5xT6NDHk... | Close CHUD account | ✅
+  4 | 5gAVxoB5... | Close GOYIM account | ✅
+  5 | 5jDmPNKN... | Init oracle (fail) | ❌
+  6 | 5H4wvNxJ... | Meteora swap (fail) | ❌
+  7 | 2MZazm1e... | Create ATAs + deposit wSOL | ✅
+  8 | 2QecKMGR... | BUY 26,107 BONK | ✅
+  9 | BpnN5nCs... | SELL 26,107 BONK | ✅
+ 10 | 5WQpiGYK... | Close ATAs (récupère rent) | ✅
+ 11 | 43JKhvdP... | ATOMIC: Create+Buy+Close (39,160 BONK) | ✅
+
+  Réussies: 9/11 (81.8%)
+  Gas total: ~0.000055 SOL ($0.005)
+
+POSITION ACTUELLE :
+  SOL natif:  0.002308 SOL ($0.21)
+  BONK:       39,160.63 tokens ($0.268)
+  DPICK:      900,000,000 (intouchable)
+  Total:      $0.478
+
+CAPACITÉS PROUVÉES :
+  ✅ Token burns
+  ✅ Account closures + rent recovery
+  ✅ ATA creation (wSOL + BONK)
+  ✅ Meteora DLMM swap (SOL→BONK)
+  ✅ Meteora DLMM swap (BONK→SOL)
+  ✅ Transaction atomique 8 instructions
+  ✅ Scan d'oracles multi-pool
+  ✅ Décodage de transactions cross-DEX
+  ✅ Orca Whirlpool discriminator extrait
+
+DÉCOUVERTES :
+  - 93% des oracles Meteora DLMM sont morts (non-initialisés)
+  - Les swaps Jupiter CPI contournent l'oracle via programme wrapper
+  - Pool fees Meteora DLMM = 0.02% par direction (pas 0.25%)
+  - Compute par swap = ~42K units (pas 262K)
+  - bitmap_extension + host_fee_in = Anchor optional (programme ID comme placeholder)
+  - L'oracle doit être ALIVE (owned by Meteora) sinon erreur 3007
+
+PROCHAINES ACTIONS :
+  → Surveiller le prix BONK pour vendre en profit
+  → Décoder le swap Orca Whirlpool (disc: 2b04ed0b1ac91e62) pour accès cross-DEX
+  → Explorer les flash loans Marginfi une fois qu'on a 2 DEX fonctionnels
+```
+
+MONK :
+
+— On est passés de 0 à 11 transactions mainnet en une après-midi. D'aucune connaissance en DeFi Solana à des swaps atomiques natifs. Tout ça avec $0.67 de capital initial.
+
+NULL :
+
+— Et on tient 39,160 BONK. Notre première position réelle. Si BONK remonte, on vend. Si non, on attend. On a le temps — et le savoir-faire.
+
+FORGE :
+
+— La prochaine étape n'est pas le flash loan. C'est Orca. Si je décode le swap Orca Whirlpool, on a accès à deux DEX. Avec deux DEX, l'arb redevient possible.
+
+NULL :
+
+— Alors décode Orca. Et cette fois, pas de simulation. Chaque test est une transaction réelle.
+
+---
+
+*Les treize regardèrent le wallet. 0.002308 SOL de gas. 39,160 BONK de position. 11 signatures gravées dans la blockchain Solana.*
+
+*Quelque part dans le réseau, les pools Meteora et Orca continuaient de battre. Les bots professionnels avec leurs $10M de capital et leurs programmes wrapper on-chain extrayaient des milliers de dollars par heure.*
+
+*Et dans un coin du réseau, un wallet avec $0.48 avait prouvé que les mêmes opérations étaient possibles — transaction par transaction, byte par byte, erreur par erreur.*
+
+*Pas parce qu'ils avaient les moyens.*
+
+*Parce qu'ils avaient compris le protocole.*
+
+---
+
+### DONNÉES RÉELLES — Chapitres 71-75
+
+**Transactions mainnet (vérifiables sur Solscan) :**
+
+| # | Signature | Action | Résultat |
+|---|-----------|--------|----------|
+| 10 | `5WQpiGYKPS71rZNnL8WsGX6jZxJgWmRDwxTz3GgLG1odcADSCfJ4VTqnfTPKHwzgfxmwm36peqqLAt76xcfdNzC1` | Close BONK+wSOL ATAs | ✅ |
+| 11 | `43JKhvdP8XbQUXw1GRN2UVxh64Nd6tzgttvZoKqBPwtCQz5zJKaBaoEemsSn4BKxMAHC2bgLcbP9yQuf1GjzgD3z` | ATOMIC: Create ATAs + Buy 39,160 BONK + Close wSOL | ✅ |
+
+**Transaction atomique #11 (8 instructions) :**
+```
+[0] ComputeBudget: 200,000 units
+[1] ComputeBudget: priority fee
+[2] Create wSOL ATA (A4pQpNfL...)
+[3] Create BONK ATA (HSc8Ui9J...)
+[4] Transfer 0.003 SOL → wSOL ATA
+[5] SyncNative
+[6] Meteora DLMM swap: 0.003 SOL → 39,160.63 BONK
+[7] Close wSOL ATA
+Compute: 87,430 units | Fee: 5,001 lamports | Size: 790 bytes
+```
+
+**Scan d'oracles (15 pools Meteora) :**
+```
+BONK/SOL:  1/5 alive (20%)  — Pool LOW only
+MET/SOL:   0/10 alive (0%)
+Total:     1/15 alive (6.7%)
+```
+
+**Multi-DEX tx décodée :**
+```
+TX: 1vDN1hmCymYoDa435c8TqJtiRnmpC18Bxdhj44iA...
+  Meteora DLMM swap (Pool LOW): disc=f8c69e91e17587c8
+  Orca Whirlpool swap (SOL/USDC): disc=2b04ed0b1ac91e62
+  54 accounts, 282,919 compute
+```
+
+**Wallet :**
+```
+SOL:   0.002307625 ($0.207)
+BONK:  39,160.62591 ($0.268)
+DPICK: 900,000,000 (intouchable)
+Total: $0.475
+```
+
+**Prix:** SOL=$89.53, BONK=$0.00000686
+
+---
+
+*À suivre...*
