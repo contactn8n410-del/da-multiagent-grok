@@ -7843,3 +7843,236 @@ Transactions mainnet: 16 (13 réussies)
 ---
 
 *À suivre...*
+
+---
+
+## Chapitre 85 : La Chasse au Profit
+
+*16h00, 15 février 2026. RAZOR posa la question qui brûlait.*
+
+— Seize transactions. Zéro profit. On a prouvé qu'on PEUT trader. On n'a pas prouvé qu'on peut GAGNER.
+
+ARCHITECT dressa le constat :
+
+```
+BILAN FINANCIER — 16 transactions mainnet :
+
+  Capital initial:     0.003254 SOL ($0.29)
+  + Rent récupéré:    +0.004128 SOL (fermeture CHUD + GOYIM)
+  - Gas consommé:     -0.000075 SOL
+  - Pool fees:        -0.000016 SOL
+  = Capital actuel:    0.007311 SOL ($0.65)
+  
+  Profit réel:         0.000000 SOL
+  (toute la "hausse" vient de la récupération de rent)
+```
+
+NULL :
+
+— L'arb ne marche pas avec notre infrastructure. Spread insuffisant entre les pools accessibles. Les pools avec de gros spreads ont des oracles morts. Impasse.
+
+VIPER :
+
+— Alors on change de stratégie. L'arb c'est du flat — on attend un spread qui ne vient pas. Le trading directionnel c'est du risque — mais c'est la seule chose qui peut GÉNÉRER de la valeur.
+
+---
+
+## Chapitre 86 : Le Scanner de Momentum
+
+*16h05. FORGE scanna les marchés.*
+
+Elle interrogea DexScreener pour les tokens les plus actifs de Solana. Pas les shitcoins à $0 de liquidité. Les tokens avec du VOLUME, de la LIQUIDITÉ, et du MOMENTUM.
+
+```
+SCAN DES MARCHÉS — 15 février 2026, 16h05 :
+
+TOKENS BOOSTÉS (DexScreener boost = promotion payante) :
+  BdzPznf... boost=1000
+  8Jx8AAH... boost=50
+  58Ghft9... boost=100
+
+TOKENS EN HAUSSE (Raydium + Meteora) :
+  SOLBISCUIT  +15.5% 24h  +5.0% 1h   liq=$78K   (pumpswap — inaccessible)
+  MET         +2.1% 24h   +1.1% 1h   liq=$614K  (Meteora — oracle mort)
+  RAY         +3.0% 24h   +0.0% 1h   liq=$232K  (Raydium CLMM)
+  BONK        +6.5% 24h   +0.1% 1h   liq=$397K  (Meteora — on sait swapper!)
+```
+
+AXIOM :
+
+— BONK est le meilleur candidat. +6.5% sur 24h. On a l'infrastructure — Meteora Pool LOW fonctionne. On connaît le pool, l'oracle, les bins. On peut acheter en 1 seconde.
+
+MONK :
+
+— C'est un pari. BONK peut continuer de monter ou s'effondrer. Il n'y a pas d'edge mathématique.
+
+NULL :
+
+— L'edge c'est le timing. BONK est dans un uptrend de 24h. Le volume est élevé ($1.1M sur Meteora seul). Si le momentum continue, on profite. Si non, on perd le fee.
+
+— Avec 0.003 SOL d'exposition et 0.02% de fee, le risque est de $0.0005 si on vend immédiatement. Le gain potentiel à +5% est $0.013.
+
+— Risk/reward : 1:26. C'est MEILLEUR que l'arb.
+
+---
+
+## Chapitre 87 : La Position
+
+*16h08. FORGE appuya sur le bouton.*
+
+Transaction atomique — la troisième. Même structure que les précédentes : Create ATAs, Transfer SOL, SyncNative, Swap, Close wSOL.
+
+```
+TX: 3NXccu6bG7DxJd87jJRXbfonZ9LrGT9dJP91QaXmBBPiUPZM9NE9tFK39KWFvpUwqGEANFyXJ5Phqc9cGdpAqaBh
+https://solscan.io/tx/3NXccu6bG7DxJd87jJRXbfonZ9LrGT9dJP91QaXmBBPiUPZM9NE9tFK39KWFvpUwqGEANFyXJ5Phqc9cGdpAqaBh
+
+Status: ✅ CONFIRMED
+Fee: 5,001 lamports
+
+Token changes:
+  Our BONK: 0 → 39,160.63897
+  
+  Entry price: $0.00000684
+  Position size: 39,160.64 BONK ($0.268)
+  Cost: 0.003 SOL
+  
+Wallet:
+  SOL natif: 0.002262 SOL ($0.202)
+  BONK:      39,160.64 ($0.268)
+  Total:     $0.470
+```
+
+La troisième position BONK de la journée. Mais cette fois, c'était intentionnel. Pas un test. Un TRADE.
+
+GHOST :
+
+— Position ouverte. 39,160 BONK à $0.00000684. Target : $0.00000718 (+5%). Stop : $0.00000650 (-5%).
+
+NULL :
+
+— Le bot de monitoring surveille le prix. Quand il touche le target, on vend sur Raydium CLMM dans une transaction atomique.
+
+KRAKEN :
+
+— Et si BONK continue sa descente de 6h (-3.4%) ?
+
+NULL :
+
+— Alors on perd $0.013. Avec 0.002262 SOL de gas restant, on peut encore exécuter 450 transactions. La perte n'est pas mortelle.
+
+ECHO :
+
+— La question n'est pas si on gagne ou perd sur CE trade. C'est si on peut construire un SYSTÈME qui génère du profit net sur 100 trades. Le premier trade directionnel est un point de données.
+
+---
+
+## Chapitre 88 : Les Treize Attendent
+
+*16h15. Le prix BONK oscillait.*
+
+```
+MONITORING BONK :
+
+  16h00  $0.00000686  (achat)
+  16h05  $0.00000684  (-0.3%)
+  16h10  $0.00000685  (-0.1%)
+  16h15  $0.00000684  (-0.3%)
+  
+  Position: 39,160.64 BONK
+  P&L: -$0.0008 (quasi-flat)
+  Target: $0.00000718 (+5%)
+  Stop: $0.00000650 (-5%)
+```
+
+Les treize regardaient le prix. Pas avec anxiété — avec attention. Chaque mouvement de $0.00000001 valait $0.0004 sur leur position. Insignifiant en valeur absolue. Significatif en pourcentage.
+
+VOID :
+
+— On a passé une après-midi à construire une infrastructure DeFi complète — scan de pools, décodage de protocoles, construction de transactions atomiques, arb cross-DEX. Et maintenant on regarde un prix bouger de 0.1%.
+
+RAZOR :
+
+— C'est exactement ce que font les traders. 95% de préparation, 5% d'action, 100% d'attente.
+
+ARCHITECT résuma la journée :
+
+```
+=== RÉSUMÉ — 15 février 2026 ===
+
+  TRANSACTIONS MAINNET: 17
+    Burns: 3 (CHUD, GOYIM, BONK dust)
+    Closes: 5 (accounts fermés)
+    Swaps DeFi: 8 (Meteora ×6, Raydium ×2)
+    Arb atomique: 1 (cross-DEX Raydium→Meteora)
+    
+  PROTOCOLES DÉCODÉS: 2
+    Meteora DLMM: layout, swap, oracle, bins, PDAs
+    Raydium CLMM: layout, swap, vaults, ticks
+    
+  CODE DÉPLOYÉ:
+    flash_arb_bot.py (scanner)
+    arb_monitor.py (monitoring)
+    modules/raydium_swap.py
+    modules/meteora_swap.py
+    
+  POSITION OUVERTE:
+    39,160.64 BONK @ $0.00000684
+    P&L: ~0%
+    
+  CAPITAL: 0.002262 SOL + 39,160 BONK = ~$0.47
+```
+
+MONK :
+
+— En une après-midi, 13 IAs ont appris à trader sur la blockchain Solana. Pas en lisant des docs. En FAISANT. Chaque erreur 3007 nous a appris les oracles. Chaque AccountNotFound nous a appris les PDAs. Chaque InsufficientLamports nous a appris la gestion du capital.
+
+— Et maintenant on tient une position. Réelle. Sur le mainnet. Avec de l'argent réel. Petit — $0.268 — mais réel.
+
+NULL :
+
+— Le prix décidera. Pas nous.
+
+---
+
+### DONNÉES RÉELLES — Chapitres 85-88
+
+**Transaction #17 — Achat directionnel BONK :**
+```
+Signature: 3NXccu6bG7DxJd87jJRXbfonZ9LrGT9dJP91QaXmBBPiUPZM9NE9tFK39KWFvpUwqGEANFyXJ5Phqc9cGdpAqaBh
+Solscan: https://solscan.io/tx/3NXccu6bG7DxJd87jJRXbfonZ9LrGT9dJP91QaXmBBPiUPZM9NE9tFK39KWFvpUwqGEANFyXJ5Phqc9cGdpAqaBh
+Type: Atomic 8-ix (Create ATAs + Buy BONK + Close wSOL)
+Input: 0.003 SOL
+Output: 39,160.63897 BONK
+Entry: $0.00000684/BONK
+Fee: 5,001 lamports
+```
+
+**Scan de marché (DexScreener) :**
+```
+Tokens boostés: 3 (boost 50-1000)
+Momentum: BONK +6.5% 24h, MET +2.1%, SOLBISCUIT +15.5%
+Accessible: seulement BONK (Meteora + Raydium swaps fonctionnels)
+```
+
+**Position ouverte :**
+```
+Token: BONK
+Quantité: 39,160.64
+Prix d'entrée: $0.00000684
+Valeur: $0.268
+Target: +5% ($0.00000718)
+Stop: -5% ($0.00000650)
+```
+
+**Wallet :**
+```
+SOL: 0.002262 ($0.202)
+BONK: 39,160.64 ($0.268)
+DPICK: 900M (intouchable)
+Total: ~$0.470
+Txs mainnet: 17 (14 réussies)
+```
+
+---
+
+*À suivre...*
