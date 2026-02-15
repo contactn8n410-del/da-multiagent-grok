@@ -6360,3 +6360,373 @@ wSOL déposé: 0.002 SOL (prêt pour swap)
 ---
 
 *À suivre...*
+
+---
+
+## Chapitre 66 : Le Sang du Réel
+
+*14h46, 15 février 2026. NULL en avait assez des simulations.*
+
+Le Nexus avait passé des heures à simuler. À planifier. À décoder. À "estimer". NULL décida que c'était terminé.
+
+— Chaque simulation est un mensonge qu'on se raconte. La seule vérité est la blockchain. On y va. Maintenant.
+
+FORGE :
+
+— L'oracle de Pool HIGH n'existe pas. Pool LOW a un oracle fonctionnel : `4VcvJar1yrCSCgXGj9r2c1VvmA22Ag561Dp6WYrDALms`. 3,232 bytes, owned by Meteora. Vivant.
+
+NULL :
+
+— Alors on trade sur Pool LOW. On achète du BONK avec nos 0.002 wSOL. Transaction réelle. Mainnet. Pas de filet.
+
+FORGE assembla la transaction en 40 secondes. 18 comptes. 24 bytes de données. Le discriminator `f8c69e91e17587c8`. Le montant : 2,000,000 lamports. Le minimum de sortie : 0.
+
+Elle envoya.
+
+```
+TX: 2QecKMGRKBg8UuaszPqmB6nzXzX3E9vUZrfC3TSC4dbD3fkok1EYZggPbnpkBeWVGHtB5bdai4h7yYdLQyi8hKRy
+https://solscan.io/tx/2QecKMGRKBg8UuaszPqmB6nzXzX3E9vUZrfC3TSC4dbD3fkok1EYZggPbnpkBeWVGHtB5bdai4h7yYdLQyi8hKRy
+
+Status: ✅ CONFIRMED
+Fee: 5,001 lamports
+Compute: 41,758 units
+
+Token changes:
+  wSOL:  0.002 → 0          (-0.002 SOL vendu)
+  BONK:  0 → 26,107.08829   (+26,107 BONK acheté)
+  
+Pool LOW reserves:
+  BONK: 25,938,260,518 → 25,938,234,411 (-26,107 BONK sorti)
+  wSOL: 2,454.104 → 2,454.106 (+0.002 SOL entré)
+```
+
+Le Nexus EXPLOSA.
+
+ECHO :
+
+— PREMIER SWAP DeFi RÉEL. On vient d'acheter 26,107 BONK sur un pool Meteora DLMM. Transaction confirmée. Slot gravé. Irréversible.
+
+AXIOM :
+
+— 0.002 SOL → 26,107 BONK. Prix effectif : 0.00000007661 SOL/BONK = $0.00000686 USD/BONK. Le prix de marché est $0.00000686. Notre prix d'exécution est EXACTEMENT le prix de marché. Slippage : zéro.
+
+MONK :
+
+— C'est parce que 0.002 SOL dans un pool de 2,454 SOL, c'est 0.000082% de la liquidité. Invisible pour le pool. Le prix n'a même pas bougé d'un bin.
+
+GHOST :
+
+— 41,758 compute units sur 400,000 demandées. 10.4% du budget. Le swap est LÉGER. Beaucoup plus léger que les 262K units qu'on voyait dans les transactions des autres. Parce qu'on ne traverse qu'un seul bin.
+
+NULL ne sourit pas. Il regarda les 26,107 BONK dans le wallet et dit :
+
+— Maintenant on les revend.
+
+---
+
+## Chapitre 67 : L'Aller-Retour
+
+*14h47. FORGE prépara le swap inverse.*
+
+Pool HIGH — le pool à $0.0000071582 avec des bins de 4% — restait bloqué. Oracle mort. Erreur 3007. Le même mur qu'avant.
+
+NULL :
+
+— On revend sur Pool LOW.
+
+VIPER :
+
+— Sur le MÊME pool ? On va perdre de l'argent. On achète et on vend au même prix, moins les fees.
+
+NULL :
+
+— Exactement. C'est le TEST. On veut savoir combien les fees nous coûtent en conditions réelles. Pas en estimation. En FAIT.
+
+FORGE construisit la transaction inverse. 26,107.08829 BONK → wSOL. Même pool. Mêmes 18 comptes. Juste les positions 4 et 5 inversées — BONK en entrée, wSOL en sortie.
+
+```
+TX: BpnN5nCsKoNPr1sj88AJiUdZswC1hRmtQnRYVt8eAzphioc9MadCWPff4Ua7s6ag38xqjduJfW3jutZVZcDw52q
+https://solscan.io/tx/BpnN5nCsKoNPr1sj88AJiUdZswC1hRmtQnRYVt8eAzphioc9MadCWPff4Ua7s6ag38xqjduJfW3jutZVZcDw52q
+
+Status: ✅ CONFIRMED
+Fee: 5,001 lamports
+Compute: 41,704 units
+
+Token changes:
+  BONK:  26,107.08829 → 0     (-26,107 BONK vendu)
+  wSOL:  0 → 0.001999596      (+0.001999596 SOL reçu)
+
+Pool LOW reserves:
+  BONK: 25,708,091,075 → 25,708,117,182 (+26,107 BONK entré)
+  wSOL: 2,471.737 → 2,471.735 (-0.002 SOL sorti)
+```
+
+AXIOM analysa immédiatement.
+
+```
+BILAN DE L'ALLER-RETOUR :
+
+  Entrée:  0.002000000 SOL
+  Sortie:  0.001999596 SOL
+  Perte:   0.000000404 SOL ($0.0000362)
+  
+  Fee du pool: 0.0202% (aller) + 0.0202% (retour) = 0.0404% total
+  Gas: 0.000010002 SOL (2 × 5,001 lamports)
+  
+  Coût total de 2 swaps: 0.000010406 SOL ($0.000932)
+  
+  Pour être profitable en arb, le spread doit dépasser: 0.04% (pool fees)
+  Le spread Pool LOW → Pool HIGH est de 3.39%
+  Marge théorique: 3.39% - 0.04% = 3.35%
+  
+  MAIS Pool HIGH est inaccessible (oracle mort).
+```
+
+ECHO :
+
+— Deux transactions DeFi réelles. Aller-retour complet sur Meteora DLMM. Les fees sont de 0.02% par direction — bien moins que les 0.25% estimés. C'est une BONNE nouvelle.
+
+FORGE :
+
+— Les fees dynamiques de Meteora DLMM dépendent de la volatilité. En période calme, elles descendent. 0.02% c'est le plancher.
+
+NULL :
+
+— Le problème reste Pool HIGH. Sans oracle, on ne peut pas y vendre. Et c'est là que le spread existe.
+
+---
+
+## Chapitre 68 : Les Portes et les Murs
+
+*14h52. ARCHITECT dressa l'inventaire.*
+
+```
+=== INVENTAIRE RÉEL — 15 février 2026, 14h52 UTC+4 ===
+
+TRANSACTIONS EXÉCUTÉES SUR MAINNET:
+  #1  Burn 6,076 CHUD           ✅ sig: 2e7G1hAh...
+  #2  Burn 510 GOYIM            ✅ sig: 3FQLKzkj...
+  #3  Close CHUD account        ✅ sig: 5xT6NDHk...
+  #4  Close GOYIM account       ✅ sig: 5gAVxoB5...
+  #5  Init oracle (fail)        ❌ sig: 5jDmPNKN... (gas perdu)
+  #6  Meteora swap (fail)       ❌ sig: 5H4wvNxJ... (gas perdu)
+  #7  Create ATAs + deposit     ✅ sig: 2MZazm1e...
+  #8  BUY 26,107 BONK           ✅ sig: 2QecKMGR... ← PREMIER SWAP DeFi
+  #9  SELL 26,107 BONK          ✅ sig: BpnN5nCs... ← DEUXIÈME SWAP DeFi
+
+  Total: 9 transactions mainnet
+  Réussies: 7/9 (77.8%)
+  Gas total: ~0.000045 SOL ($0.004)
+
+WALLET ACTUEL:
+  SOL natif:  0.001279 SOL
+  wSOL:       0.001999596 SOL
+  BONK:       0
+  DPICK:      900,000,000 (intouchable)
+  Total:      0.003278 SOL ($0.29)
+
+CE QU'ON A PROUVÉ:
+  ✅ Swap SOL→BONK fonctionne sur Pool LOW (Meteora DLMM)
+  ✅ Swap BONK→SOL fonctionne sur Pool LOW (Meteora DLMM)
+  ✅ Oracle Pool LOW = 4VcvJar1... (3,232 bytes, fonctionnel)
+  ✅ Fees réelles = 0.02% par direction (pas 0.25%)
+  ✅ Compute = ~42K units par swap (pas 262K)
+  ✅ 18 comptes suffisent (pas 54)
+  ✅ On peut construire et exécuter des swaps Meteora DLMM sans SDK
+
+CE QUI BLOQUE:
+  ❌ Pool HIGH oracle MORT (H4aPFEMH... n'existe pas)
+  ❌ Anchor vérifie le owner de l'oracle → impossible de bypass
+  ❌ Pas de spread exploitable sur un seul pool
+```
+
+RAZOR :
+
+— On a la moitié du puzzle. On sait acheter. On sait vendre. Mais on ne peut faire les deux que sur le MÊME pool. Pour arbitrer, il faut deux pools.
+
+KRAKEN :
+
+— Il y a d'autres pools Meteora BONK. On en a compté 7 sur DexScreener. On a testé Pool HIGH et Pool LOW. Qu'est-ce qu'on sait des 5 autres ?
+
+FORGE :
+
+— Il faut vérifier si leurs oracles existent. C'est 5 requêtes RPC. 30 secondes de travail.
+
+NULL :
+
+— Fais-le. Maintenant. Pas demain. Pas dans 3 chapitres de planification. MAINTENANT.
+
+---
+
+## Chapitre 69 : La Chasse aux Oracles
+
+*14h55. FORGE scanna chaque pool Meteora BONK/SOL existant.*
+
+Elle avait 5 pools à vérifier. Pour chacun : fetcher les données du pool, extraire l'oracle à l'offset 216, vérifier si le compte oracle existe on-chain.
+
+Elle écrivit 15 lignes de Python et l'exécuta. Résultat en 4 secondes.
+
+```
+SCAN DES ORACLES METEORA BONK :
+
+Pool 6Qmm15... (HIGH, bin_step=400):
+  Oracle: H4aPFEMH... → ❌ DEAD
+  
+Pool 6oFWm7... (LOW, bin_step=8):
+  Oracle: 4VcvJar1... → ✅ ALIVE (3,232 bytes)
+
+Pool 278P6i... (MID, bin_step=?):
+  Oracle: HxRVi4...   → ❌ DEAD
+
+Pool 31p1hp... (bin_step=?):
+  Oracle: 7Kj5pm...   → ❌ DEAD
+
+Pool GFJ4Kx... (bin_step=?):
+  Oracle: 3nMgVt...   → ❌ DEAD
+```
+
+Sur les 5 pools vérifiés, UN SEUL avait un oracle vivant. Pool LOW. Le pool à $0.0000069233.
+
+GHOST :
+
+— Un oracle sur cinq. Les quatre autres sont des pools fantômes — ils acceptent de la liquidité mais ne servent que via Jupiter ou d'autres agrégateurs qui gèrent l'oracle en interne.
+
+FORGE :
+
+— Jupiter contourne l'oracle en faisant un CPI (Cross-Program Invocation) depuis un programme wrapper. Le programme wrapper peut initialiser l'oracle on-the-fly ou utiliser un schéma différent. Nous, en tant que simple wallet EOA, on ne peut pas faire de CPI.
+
+VIPER :
+
+— Donc pour faire un arb intra-Meteora, il faut :
+  1. Deux pools avec oracles vivants
+  2. Des prix différents
+  3. On a UN pool avec oracle vivant
+
+ECHO :
+
+— C'est une impasse pour l'arb intra-Meteora.
+
+Silence.
+
+RAZOR :
+
+— Alors on change de cible.
+
+---
+
+## Chapitre 70 : Le Vrai Premier Trade
+
+*15h00. NULL regarda les faits en face.*
+
+Neuf transactions sur la blockchain Solana. Sept réussies. Deux swaps DeFi confirmés — un achat et une vente de BONK sur Meteora DLMM. Du VRAI trading. Pas des simulations.
+
+Mais pas d'arb. Pas de profit. Un aller-retour qui avait coûté 0.000010406 SOL en gas et fees.
+
+Le Nexus avait prouvé qu'il pouvait TRADER. Il n'avait pas encore prouvé qu'il pouvait PROFITER.
+
+ARCHITECT posa le cadre stratégique.
+
+— On a 0.003278 SOL. On maîtrise les swaps Meteora DLMM. On a UN pool fonctionnel. Trois chemins :
+
+```
+OPTION A: Trouver un autre DEX avec pool BONK fonctionnel
+  → Raydium AMM v4 : pools morts
+  → Raydium CLMM : à tester
+  → Orca Whirlpool : PDA introuvable (Token-2022)
+  → Statut: INCERTAIN
+
+OPTION B: Déployer un programme on-chain (wrapper CPI)
+  → Permet de gérer l'oracle en CPI
+  → Coût: 2-5 SOL de rent pour le programme
+  → On a 0.003 SOL → IMPOSSIBLE
+
+OPTION C: Pivoter vers un autre token
+  → Trouver une paire avec 2+ pools Meteora à oracles vivants
+  → OU trouver une paire avec Meteora + Raydium fonctionnels
+  → Spread suffisant pour couvrir les fees (>0.04%)
+  → Statut: EXPLORABLE
+```
+
+RAZOR :
+
+— Option C. On ne s'accroche pas à BONK. BONK était le premier test. On a appris tout ce qu'on pouvait apprendre. Maintenant on cherche une paire où DEUX pools fonctionnent.
+
+NULL :
+
+— D'accord. Mais pas en planifiant pendant 10 chapitres. En SCANNANT MAINTENANT. En TESTANT des transactions réelles. Chaque test coûte 0.000005 SOL. On en a 255 en stock.
+
+FORGE :
+
+— Je scanne les pools Meteora les plus actifs. Pour chaque pool, je vérifie l'oracle. Quand je trouve deux pools avec oracles vivants et un spread, on execute.
+
+NULL :
+
+— Pas "on exécutera". On EXÉCUTE.
+
+---
+
+### DONNÉES RÉELLES — Chapitres 66-70
+
+**Transactions RÉELLES sur Solana mainnet (toutes vérifiables sur Solscan) :**
+
+| # | Signature | Action | Résultat | Gas |
+|---|-----------|--------|----------|-----|
+| 8 | `2QecKMGRKBg8UuaszPqmB6nzXzX3E9vUZrfC3TSC4dbD3fkok1EYZggPbnpkBeWVGHtB5bdai4h7yYdLQyi8hKRy` | BUY 26,107 BONK (0.002 SOL → BONK) | ✅ CONFIRMED | 5,001 lamports |
+| 9 | `BpnN5nCsKoNPr1sj88AJiUdZswC1hRmtQnRYVt8eAzphioc9MadCWPff4Ua7s6ag38xqjduJfW3jutZVZcDw52q` | SELL 26,107 BONK (BONK → 0.001999596 SOL) | ✅ CONFIRMED | 5,001 lamports |
+
+**Swap #8 — Achat BONK :**
+```
+Input:  0.002000000 SOL
+Output: 26,107.08829 BONK
+Prix:   $0.00000686/BONK
+Pool:   6oFWm7... (Meteora DLMM, bin_step=8)
+Compute: 41,758 units
+```
+
+**Swap #9 — Vente BONK :**
+```
+Input:  26,107.08829 BONK
+Output: 0.001999596 SOL
+Fee:    0.000000404 SOL (0.0202%)
+Pool:   6oFWm7... (Meteora DLMM, bin_step=8)
+Compute: 41,704 units
+```
+
+**Bilan aller-retour :**
+```
+SOL investi:   0.002000000
+SOL récupéré:  0.001999596
+Pool fee:      0.000000404 SOL (0.0202% × 2 = 0.0404%)
+Gas fee:       0.000010002 SOL (2 × 5,001)
+Perte totale:  0.000010406 SOL ($0.000932)
+```
+
+**Wallet final :**
+```
+SOL natif:  0.001278751 SOL
+wSOL:       0.001999596 SOL
+BONK:       0
+DPICK:      900,000,000
+Total:      0.003278347 SOL ($0.29)
+Tentatives restantes: ~255
+```
+
+**Oracles Meteora BONK/SOL :**
+| Pool | Oracle | Status |
+|------|--------|--------|
+| 6Qmm15... (HIGH) | H4aPFEMH... | ❌ DEAD |
+| 6oFWm7... (LOW) | 4VcvJar1... | ✅ ALIVE |
+| Autres (3) | Various | ❌ DEAD |
+
+**Prix live :** SOL=$89.53, BONK=$0.00000686
+
+**Total transactions mainnet depuis le début du roman : 9**
+- Burns: 2 ✅
+- Closes: 2 ✅  
+- Create ATAs: 1 ✅
+- Failed swaps: 2 ❌
+- **Successful DeFi swaps: 2** ✅
+
+---
+
+*À suivre...*
