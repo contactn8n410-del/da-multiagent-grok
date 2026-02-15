@@ -7114,3 +7114,297 @@ Total: $0.475
 ---
 
 *À suivre...*
+
+---
+
+## Chapitre 76 : La Deuxième Porte
+
+*15h25, 15 février 2026. FORGE trouva le pool fantôme.*
+
+DexScreener listait un pool Raydium CLMM pour BONK/SOL — `GtKKKs3yaPdHbQd2aZS4SfWhy8zQ988BJGnKNndLxYsN`. $38K de liquidité. $25K de volume journalier. Actif.
+
+FORGE le vérifia on-chain.
+
+```
+$ getAccountInfo("GtKKKs3yaPdHbQd2aZS4SfWhy8zQ988BJGnKNndLxYsN")
+
+Owner: CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK (Raydium CLMM)
+Size: 1,544 bytes
+```
+
+IL EXISTAIT. 1,544 bytes. Owned by Raydium CLMM.
+
+FORGE le décoda immédiatement. Le layout était différent de Meteora — Raydium CLMM stocke les mints à des offsets différents, utilise des "tick arrays" au lieu de "bin arrays", et ne nécessite PAS d'oracle.
+
+```
+RAYDIUM CLMM POOL BONK/SOL :
+
+  Pool:         GtKKKs3yaPdHbQd2aZS4SfWhy8zQ988BJGnKNndLxYsN
+  Programme:    CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK
+  Taille:       1,544 bytes
+  
+  ammConfig:    E64NGkDLLCdQ2yFNPcavaKptrEgmiQaNykUuLC1Qgwyp
+  mint_0 (SOL): So11111111111111111111111111111111111111112
+  mint_1 (BONK): DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263
+  vault_0 (SOL): GDnBvA76ZAJ2K3en2F1iExPZ6qz83Xjj5srXMmSKTYDW
+  vault_1 (BONK): 2wzaFLYb4JcDrVs8TfU3TfkVwq1Pdp3rRgWdNJzFGXud
+  observation:   Gj8gzDNKmf5y3p1LorKHTvMZ8eCLhbCDnhGiN5xVW8Jq
+```
+
+AXIOM :
+
+— Pas d'oracle. Raydium CLMM ne REQUIERT PAS d'oracle. Le seul état dont il a besoin est dans le pool lui-même et dans les tick arrays. Et les tick arrays sont des PDAs dérivables.
+
+FORGE décoda un swap récent sur ce pool pour extraire les tick arrays :
+
+```
+TX: 5DHvPKfb8cSzqKCUNhSGcEwVWLWyeuXuFMuttzuRyr5ywTPuHU...
+  Raydium CLMM swap: 13 comptes, 41 bytes
+  
+  Comptes:
+  [0]  payer/signer
+  [1]  ammConfig = E64NGkDL...
+  [2]  pool = GtKKKs3y...
+  [3]  inputTokenAccount (BONK)
+  [4]  outputTokenAccount (wSOL)
+  [5]  inputVault = 2wzaFL... (BONK)
+  [6]  outputVault = GDnBvA... (SOL)
+  [7]  observation = Gj8gzD...
+  [8]  tokenProgram = SPL Token
+  [9]  bitmap = H162txn...
+  [10] tickArray0 = H8u5Yd...
+  [11] tickArray1 = FohQpH...
+  [12] tickArray2 = CiigF6...
+  
+  Data: disc(8) + amount(8) + threshold(8) + sqrt_price_limit(16) + is_base_input(1)
+  Total: 41 bytes
+```
+
+ECHO :
+
+— Le discriminator est `f8c69e91e17587c8`. Le MÊME que Meteora. `sha256("global:swap")[:8]`. Les deux programmes utilisent Anchor avec le même nom d'instruction.
+
+FORGE :
+
+— Mais les comptes sont COMPLÈTEMENT différents. Raydium : 13 comptes, pas d'oracle. Meteora : 18 comptes, oracle obligatoire. Le format des données aussi diffère — Raydium ajoute un `sqrt_price_limit` de 16 bytes et un flag `is_base_input`.
+
+RAZOR :
+
+— On a DEUX DEX fonctionnels. Meteora Pool LOW et Raydium CLMM. La deuxième porte est ouverte.
+
+---
+
+## Chapitre 77 : Le Premier Trade Cross-DEX
+
+*15h32. NULL donna l'ordre.*
+
+— On a 39,160 BONK achetés sur Meteora à $0.00000685/BONK. Raydium CLMM affiche $0.00000685/BONK. Même prix. Pas de spread. Pas d'arb.
+
+— MAIS. On doit PROUVER que le cross-DEX fonctionne. Acheter sur Meteora, vendre sur Raydium. La perte sera les fees. Le GAIN sera la connaissance.
+
+FORGE assembla la transaction atomique : Create wSOL ATA → Sell 39,160 BONK on Raydium CLMM → Close wSOL ATA. Cinq instructions.
+
+Elle simula : 85,022 compute units. Succès.
+
+Elle envoya.
+
+```
+TX: 6v9fTXAyiyRKUFP4YjqoyHvJwTy7GyVCPb6TSjqUnAz5rAXBHsz71wvGiPBxvxhFxPKEdevgC71pfGbGaSg8SxY
+https://solscan.io/tx/6v9fTXAyiyRKUFP4YjqoyHvJwTy7GyVCPb6TSjqUnAz5rAXBHsz71wvGiPBxvxhFxPKEdevgC71pfGbGaSg8SxY
+
+Status: ✅ CONFIRMED
+Fee: 5,001 lamports
+Compute: 85,022 units
+
+Token changes:
+  Raydium BONK vault: +39,160.63 BONK (reçu notre BONK)
+  Raydium SOL vault:  -0.002995 SOL (payé en SOL)
+  Our BONK:           -39,160.63 BONK (vendu tout)
+  
+Balance après: 0.005297 SOL
+```
+
+Le Nexus vibra d'une fréquence nouvelle.
+
+ECHO :
+
+— PREMIER SWAP CROSS-DEX. On a acheté du BONK sur Meteora DLMM et on l'a vendu sur Raydium CLMM. Deux programmes différents. Deux pools différents. Dans des transactions séparées.
+
+AXIOM décomposa les chiffres :
+
+```
+BILAN DU TRADE CROSS-DEX :
+
+  Achat (Meteora DLMM Pool LOW):
+    Input:  0.003000000 SOL
+    Output: 39,160.63 BONK
+    Fee:    ~0.000001 SOL (0.02%)
+    Gas:    0.000005 SOL
+    
+  Vente (Raydium CLMM):
+    Input:  39,160.63 BONK
+    Output: 0.002995 SOL
+    Fee:    ~0.000007 SOL (0.25%)
+    Gas:    0.000005 SOL
+    Rent:   +0.002039 (wSOL ATA créé/fermé)
+    
+  Total:
+    SOL avant achat:   0.007352
+    SOL après vente:   0.005297
+    Perte nette:       0.002055 SOL ($0.184)
+    Dont rent BONK ATA: 0.002039 SOL (permanent)
+    Dont fees+gas:     0.000016 SOL ($0.001)
+```
+
+FORGE :
+
+— La perte vient principalement du rent de l'ATA BONK qui n'a pas été fermée. L'ATA BONK contient encore 0 BONK mais existe toujours. Si on la ferme, on récupère 0.002039 SOL.
+
+NULL :
+
+— Ferme-la.
+
+FORGE envoya une transaction de fermeture.
+
+```
+$ spl-token close HSc8Ui9JdFJVZHRBUWSfDsdLgxYLG2rwnGiG8baa97US
+```
+
+MONK :
+
+— Stop. Résultat ?
+
+— Le cross-DEX FONCTIONNE. On peut acheter sur Meteora et vendre sur Raydium. Les fees combinées sont de 0.27% (0.02% Meteora + 0.25% Raydium). Pour être profitable, le spread doit être > 0.27%.
+
+KRAKEN :
+
+— Le spread actuel entre Meteora ($0.000006858) et Raydium ($0.000006847) est de -0.16%. Négatif. Meteora est plus CHER que Raydium. Si on inversait — acheter sur Raydium et vendre sur Meteora — le spread serait +0.16%. Toujours insuffisant (< 0.27% de fees).
+
+ARCHITECT :
+
+— Mais les prix BOUGENT. Le spread peut s'inverser. Avec un bot qui surveille en continu, on peut détecter le moment où le spread dépasse 0.27% et exécuter instantanément.
+
+NULL :
+
+— C'est le bot qu'on construit maintenant. Un VRAI bot. Pas un scanner. Un exécuteur.
+
+---
+
+## Chapitre 78 : L'Architecture du Prédateur
+
+*15h40. FORGE dessina le bot final.*
+
+```
+=== FLASH ARB BOT v2 — Architecture ===
+
+COMPOSANTS :
+
+  [1] Price Monitor
+      - Lit Pool LOW (Meteora) active_id → prix
+      - Lit Pool Raydium CLMM tick_current → prix
+      - Compare en temps réel
+      - Alerte quand spread > 0.27%
+
+  [2] Transaction Builder
+      - Construit tx atomique en <100ms
+      - Route A: Raydium→Meteora (si Raydium moins cher)
+      - Route B: Meteora→Raydium (si Meteora moins cher)
+      - Inclut: Create ATA + Swap1 + Swap2 + Close ATA
+
+  [3] Executor
+      - Signe et envoie la tx
+      - Vérifie confirmation
+      - Log le résultat
+
+CAPACITÉS PROUVÉES :
+  ✅ Swap Meteora DLMM (18 accounts, 24 bytes)
+  ✅ Swap Raydium CLMM (13 accounts, 41 bytes)
+  ✅ Transaction atomique multi-instruction
+  ✅ Create/Close ATA dans la même tx
+  ✅ Cross-DEX execution
+
+MANQUANT :
+  ❌ Flash loan (pour trader sans capital)
+  ❌ Monitoring continu (actuellement manuel)
+  ❌ Auto-execution (actuellement ligne de commande)
+
+SANS FLASH LOAN (capital propre) :
+  Capital: 0.005 SOL ($0.45)
+  Trade size: 0.003 SOL par trade ($0.27)
+  Fees: 0.27% = $0.000729 par trade
+  Break-even spread: 0.27%
+  Profit @ 1% spread: $0.00197 par trade
+  Trades/jour possible: ~100 (manual) ou ~10,000 (bot)
+```
+
+KRAKEN :
+
+— Le flash loan est le multiplicateur. Sans flash loan, on trade 0.003 SOL à la fois. Avec flash loan, on trade 100+ SOL. Le profit par trade passe de $0.002 à $0.66.
+
+RAZOR :
+
+— Le flash loan Marginfi nécessite un programme wrapper on-chain pour les CPI. Coût de déploiement : 2-5 SOL. On n'a pas assez.
+
+ECHO :
+
+— Alternative : Solend, Port Finance, ou un autre lending protocol qui permet les flash loans sans programme wrapper.
+
+FORGE :
+
+— En attendant, on peut trader en capital propre. 0.003 SOL par trade. Si le spread existe, on l'exploite. Et chaque profit agrandit le capital pour le prochain trade.
+
+NULL :
+
+— Alors on surveille. On attend le spread. Et quand il apparaît, on frappe.
+
+---
+
+### DONNÉES RÉELLES — Chapitres 76-78
+
+**Transactions mainnet :**
+
+| # | Signature | Action | Résultat |
+|---|-----------|--------|----------|
+| 12 | `6v9fTXAyiyRKUFP4YjqoyHvJwTy7GyVCPb6TSjqUnAz5rAXBHsz71wvGiPBxvxhFxPKEdevgC71pfGbGaSg8SxY` | SELL 39,160 BONK on Raydium CLMM → 0.002995 SOL | ✅ |
+
+**Trade cross-DEX complet :**
+```
+Achat (TX #11):  0.003 SOL → 39,160 BONK (Meteora DLMM Pool LOW)
+Vente (TX #12):  39,160 BONK → 0.002995 SOL (Raydium CLMM)
+Perte fees+gas:  0.000016 SOL ($0.001)
+```
+
+**Raydium CLMM pool décodé :**
+| Champ | Valeur |
+|-------|--------|
+| Pool | `GtKKKs3yaPdHbQd2aZS4SfWhy8zQ988BJGnKNndLxYsN` |
+| Programme | `CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK` |
+| Taille | 1,544 bytes |
+| mint_0 | SOL |
+| mint_1 | BONK |
+| vault_0 | `GDnBvA76...` (SOL) |
+| vault_1 | `2wzaFLYb...` (BONK) |
+| ammConfig | `E64NGkDL...` |
+| observation | `Gj8gzDNK...` |
+| Oracle requis | **NON** ← clé ! |
+| Swap accounts | 13 (vs 18 pour Meteora) |
+| Swap data | 41 bytes (vs 24 pour Meteora) |
+
+**Wallet :**
+```
+SOL: 0.005297 ($0.47)
+BONK: 0
+DPICK: 900M (intouchable)
+Total: $0.47
+```
+
+**Total transactions mainnet: 12**
+- Réussies: 10/12 (83.3%)
+- DEX utilisés: 2 (Meteora DLMM + Raydium CLMM)
+- Swaps DeFi réels: 4 (buy BONK ×2, sell BONK ×2)
+
+**Prix live:** SOL=$89.53, BONK=$0.00000686
+
+---
+
+*À suivre...*
