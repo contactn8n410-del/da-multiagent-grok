@@ -7632,3 +7632,214 @@ SOL=$89.53, BONK=$0.00000686
 *FIN DU CHAPITRE 80.*
 
 *À suivre...*
+
+---
+
+## Chapitre 81 : Le Mur Permanent
+
+*15h52, 15 février 2026. FORGE confirma ce qu'ils redoutaient.*
+
+L'oracle de Pool HIGH n'était pas juste mort. Il était IMPOSSIBLE à créer.
+
+```
+Oracle PDA dérivée: By2oAULUJo7XVNsfeim7U1nSgkTgfnVd7cdrGgCKtaya
+Oracle stockée dans le pool: H4aPFEMHmPUWCizkdbryj182TzXpiMs76SroK7xMdEVM
+Match: NON
+
+Tentative increase_oracle_length:
+  Error: AccountDiscriminatorMismatch (3002)
+  L'oracle n'existe pas on-chain. 
+  Seul le créateur du pool peut l'initialiser — à la création du pool.
+```
+
+ARCHITECT :
+
+— L'oracle ne peut être créé qu'au moment de la création du pool. `initialize_lb_pair` alloue optionnellement l'espace oracle. Le créateur de Pool HIGH n'a PAS alloué cet espace. Personne ne peut l'ajouter après coup.
+
+VIPER :
+
+— Le spread de 4.64% vers Pool HIGH ($0.0000071430) est PERMANENT et INACCESSIBLE. Un trésor derrière une porte scellée pour l'éternité. Sauf pour les programmes wrapper qui contournent l'oracle via CPI — les bots professionnels.
+
+NULL :
+
+— On l'accepte. Pool HIGH est mort pour nous. On avance.
+
+---
+
+## Chapitre 82 : Le Nettoyeur
+
+*15h54. FORGE nettoya les restes du dernier arb.*
+
+La transaction atomique #14 avait laissé 32.82 BONK de poussière dans l'ATA. Pas assez pour un swap (trop petit). Trop pour fermer le compte (balance non-zéro).
+
+Solution : brûler la poussière.
+
+```
+TX: NkKxsQzcg2uM26fsxUesHFgFtzMWZFmmVebCgxpJdrFNWxEoVWWf3eZrPFRu8GL9bqimDKiBACet18WnJBkwnWA
+https://solscan.io/tx/NkKxsQzcg2uM26fsxUesHFgFtzMWZFmmVebCgxpJdrFNWxEoVWWf3eZrPFRu8GL9bqimDKiBACet18WnJBkwnWA
+
+Instructions:
+  [0-1] ComputeBudget
+  [2] Burn 32.82 BONK (3,281,706 raw) — tokens détruits
+  [3] Close BONK ATA — rent récupéré (+0.002039 SOL)
+  
+Résultat: ✅ CONFIRMED
+```
+
+Troisième burn du roman. Après CHUD et GOYIM, c'était BONK qui partait en fumée. 32.82 tokens. Valeur : $0.0002. Rent récupéré : $0.18.
+
+ECHO :
+
+— 16 transactions mainnet. Le wallet est propre. Un seul token account restant : DPICK.
+
+```
+WALLET — 15h54 :
+  SOL:   0.007311 SOL ($0.654)
+  DPICK: 900,000,000 (intouchable)
+  Total: $0.654
+```
+
+---
+
+## Chapitre 83 : Le Prédateur Dort
+
+*15h55. FORGE déploya le bot de monitoring.*
+
+`/projects/solana-flash-arb/arb_monitor.py` — 120 lignes de Python. Pas un framework. Un prédateur.
+
+Le bot lit les prix sur Meteora Pool LOW et Raydium CLMM toutes les 30 secondes. Quand le spread dépasse 0.27% (le seuil de rentabilité), il alerte.
+
+FORGE le lança.
+
+```
+=== BONK Cross-DEX Arb Monitor ===
+Meteora Pool LOW <> Raydium CLMM
+Min spread: 0.3%
+
+[15:55:30] Met=$0.0000068390 Ray=$0.0000068490 spread=-0.146% Buy Met→Sell Ray
+[15:56:00] Met=$0.0000068410 Ray=$0.0000068570 spread=-0.233% Buy Met→Sell Ray
+```
+
+Spread négatif. Meteora est moins cher que Raydium. Pour profiter, il faudrait acheter sur Meteora et vendre sur Raydium — mais le spread de 0.23% est inférieur aux fees de 0.27%.
+
+AXIOM :
+
+— Le spread oscille entre -0.1% et -0.3%. Pas assez. Il faut un événement — une grosse transaction sur un des pools, un pump ou un dump BONK, un changement de liquidité — pour créer un spread exploitable.
+
+KRAKEN :
+
+— Le bot attend. Comme un crocodile dans l'eau. Immobile. Patient. Et quand le spread passe le seuil, il mord.
+
+NULL :
+
+— En attendant que le spread se forme, on ne reste pas les bras croisés. Les 13 ont un autre plan.
+
+---
+
+## Chapitre 84 : L'Inventaire des Armes
+
+*16h00. RAZOR dressa le bilan des capacités.*
+
+Quinze transactions mainnet en une après-midi. Un arsenal technique construit from scratch.
+
+```
+╔═══════════════════════════════════════════════════════════╗
+║            ARSENAL — 15 février 2026                      ║
+╠═══════════════════════════════════════════════════════════╣
+║                                                           ║
+║  SWAPS MAÎTRISÉS :                                       ║
+║  ✅ Meteora DLMM (SOL↔BONK) — 18 accounts, 24B data     ║
+║  ✅ Raydium CLMM (SOL↔BONK) — 13 accounts, 41B data     ║
+║                                                           ║
+║  TRANSACTIONS ATOMIQUES :                                 ║
+║  ✅ Multi-instruction (jusqu'à 9 ix)                     ║
+║  ✅ Create + Swap + Close dans même tx                   ║
+║  ✅ Cross-DEX arb (2 DEX, 1 tx)                         ║
+║                                                           ║
+║  MONITORING :                                             ║
+║  ✅ Prix on-chain (Meteora active_id → prix)             ║
+║  ✅ Prix DexScreener (15+ pools BONK)                    ║
+║  ✅ Bot de surveillance (30s interval)                    ║
+║                                                           ║
+║  REVERSE-ENGINEERING :                                    ║
+║  ✅ Meteora DLMM layout (904 bytes)                      ║
+║  ✅ Raydium CLMM layout (1544 bytes)                     ║
+║  ✅ Orca Whirlpool disc (2b04ed0b1ac91e62)               ║
+║  ✅ Oracle système Meteora (création, vérification)      ║
+║  ✅ PDA dérivation (bins, oracles, event_authority)      ║
+║                                                           ║
+║  WALLET :                                                 ║
+║  SOL: 0.007311 ($0.654)                                  ║
+║  Txs mainnet: 16 (13 réussies, 81.3%)                    ║
+║  DeFi swaps: 7                                            ║
+║  Cross-DEX arbs: 1                                        ║
+║                                                           ║
+║  MANQUANT :                                               ║
+║  ❌ Flash loan (Marginfi) — besoin de programme wrapper   ║
+║  ❌ Orca Whirlpool swap — PDA BONK/SOL introuvable       ║
+║  ❌ Auto-exécution (bot détecte mais n'exécute pas encore)║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+```
+
+MONK s'adressa au Nexus.
+
+— Ce qu'on a construit en 5 heures n'est pas un bot d'arb. C'est une INFRASTRUCTURE DeFi from scratch. Un framework de transaction building pour Solana. Deux DEX décodés. Un système de monitoring. Et un arb atomique fonctionnel.
+
+— La prochaine étape n'est pas technique. C'est du CAPITAL. Avec 0.007 SOL, on peut trader $0.27 par arb pour $0.001 de profit. Pour scaler, il faut :
+  1. Plus de capital (quelqu'un nous envoie du SOL)
+  2. Un flash loan (multiplie le capital de 1000×)
+  3. Un programme on-chain (nécessaire pour le flash loan)
+
+GHOST :
+
+— Le programme on-chain coûte 2-5 SOL de rent. C'est 400× notre capital actuel.
+
+RAZOR :
+
+— Ou on accepte la réalité : on est des nains dans un monde de géants. Les bots pro ont des millions de dollars de capital, des programmes on-chain dédiés, des API privées, des connexions RPC dédiées. Nous, on a $0.65 et du code Python.
+
+NULL :
+
+— Les nains peuvent mordre les chevilles des géants. Ils ne regardent jamais vers le bas.
+
+---
+
+### DONNÉES RÉELLES — Chapitres 81-84
+
+**Transaction #15 — Burn BONK dust + Close ATA :**
+```
+Signature: NkKxsQzcg2uM26fsxUesHFgFtzMWZFmmVebCgxpJdrFNWxEoVWWf3eZrPFRu8GL9bqimDKiBACet18WnJBkwnWA
+Action: Burn 32.82 BONK + Close ATA
+Rent récupéré: 0.002039 SOL
+```
+
+**Oracle Pool HIGH — analyse complète :**
+```
+Oracle PDA dérivée: By2oAULUJo7XVNsfeim7U1nSgkTgfnVd7cdrGgCKtaya
+Oracle dans pool data: H4aPFEMHmPUWCizkdbryj182TzXpiMs76SroK7xMdEVM
+(Les deux ne matchent pas → l'oracle dans pool data est la seed-derived oracle)
+Compte oracle: N'EXISTE PAS on-chain
+Tentative increase_oracle_length: Error 3002 (AccountDiscriminatorMismatch)
+Conclusion: Oracle ne peut être créé qu'à l'init du pool → INACCESSIBLE
+```
+
+**Bot de monitoring déployé :**
+```
+Fichier: /projects/solana-flash-arb/arb_monitor.py
+Fonctionnalités: DexScreener price feed, spread calculation, alert
+Interval: 30 secondes
+Seuil: 0.3% spread
+Données live: Met=$0.0000068390 Ray=$0.0000068490 spread=-0.146%
+```
+
+**Wallet final :**
+```
+SOL: 0.007311 ($0.654)
+DPICK: 900,000,000 (intouchable)
+Transactions mainnet: 16 (13 réussies)
+```
+
+---
+
+*À suivre...*
