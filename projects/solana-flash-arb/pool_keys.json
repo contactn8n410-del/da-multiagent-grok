@@ -1,0 +1,14 @@
+{
+  "poolCoinTokenAccount": "3mEFzHsJyu2Cpjrz6zPmTzP7uoLFj9SbbecGVzzkL1mJ",
+  "poolPcTokenAccount": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
+  "coinMintAddress": "So11111111111111111111111111111111111111112",
+  "pcMintAddress": "89ZKE4aoyfLBe2RuV6jM3JGNhaV18Nxh8eNtjRcndBip",
+  "lpMintAddress": "6Su6Ea97dBxecd5W92KcVvv6SzCurE2BXGgFe9LNGMpE",
+  "ammOpenOrders": "C6tp2RVZnxBPFbnAsfTjis8BN9tycESAT4SgDQgbbrsA",
+  "serumMarket": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+  "serumProgramId": "5hATcCfvhVwAjNExvrg8rRkXmYyksHhVajWLa46iRsmE",
+  "ammTargetOrders": "11111111111111111111111111111111",
+  "poolWithdrawQueue": "11111111111111111111111111111111",
+  "poolTempLpTokenAccount": "GThUX1Atko4tqhN2NaiTazWSeFWMuiUvfFnyJyUghFMJ",
+  "ammOwner": "FXF3WPD7AqE3ev32AbKhyKzaR53YsdVmnnWH6ZNTXsmH"
+}
