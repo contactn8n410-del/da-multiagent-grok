@@ -150,16 +150,16 @@ The philosophical alignment is clear:
 - Both implement deliberative debate before final output
 - Both have a coordinator/assembler that synthesizes
 
-The key difference: **Grok does this between separate model instances. MDIR does it inside a single model.**
+The key difference: **Grok does this between separate model instances. MDIR proposes to do it inside a single model.**
 
-Why does this matter?
+These are two fundamentally different approaches to the same intuition:
 
-1. **Efficiency**: MDIR's RHs share the backbone. They don't each need a full forward pass through a 3T parameter model.
-2. **Depth of debate**: MDIR's deliberation happens in representation space, not token space. The debate is richer — attention maps and hidden states carry more information than generated text.
-3. **End-to-end differentiability**: MDIR can be trained end-to-end with backpropagation. Multi-agent systems require RL or other non-differentiable coordination mechanisms.
-4. **Architectural guarantees**: MDIR's roles are structurally enforced, not emergently learned. The Critic MUST attend to weaknesses because its attention mechanism is wired that way.
+- **Grok 4.20** uses independent agents that communicate in text/token space. Each agent is a full model. The coordination happens externally. This is proven, practical, and already deployed.
+- **MDIR** proposes that the deliberation happens in latent representation space, within a shared backbone. The RHs are lightweight and share parameters. The debate is differentiable and trainable end-to-end.
 
-That said, Grok's approach has its advantages: simpler to implement, easier to scale (add more agents), and each agent can be independently updated. MDIR's intra-model approach is more elegant but harder to build.
+Neither approach is inherently superior. Grok's multi-agent system is simpler to build, easier to scale, and each agent can be updated independently. MDIR's intra-model approach is unproven — it could potentially offer efficiency gains and richer debate through shared representations, but it faces hard implementation challenges that haven't been solved yet.
+
+The fact that two independent efforts converged on "specialized roles + deliberation + synthesis" suggests this direction is worth exploring. Whether the intra-model variant works as well as the multi-agent variant is an open empirical question.
 
 ---
 
@@ -218,6 +218,4 @@ The architecture that thinks before it speaks.
 
 ---
 
-*MDIR is an independent research architecture. Code, documentation, and implementation notes: [github.com/contactn8n410-del/basetools](https://github.com/contactn8n410-del/basetools)*
-
-*Architecture documents: `/data/mdir_architecture/` — TRUE_ARCHITECTURE.md, NOVELTY_ANALYSIS.md, IMPLEMENTATION_CHALLENGES.md*
+*MDIR is an independent research architecture, currently at the design stage. We welcome discussion and collaboration.*
