@@ -162,6 +162,14 @@ Documenté dans : `skills/subagent-limitations/SKILL.md`
 
 ## Articles Publiés
 
+### Article 3 : "MDIR: What If a Single Model Could Debate Itself Before Answering?" (2026-02-22)
+- **Medium** : `https://medium.com/@contact.n8n410/ff2108650e50`
+- **DEV.to** : `https://dev.to/contactn8n410del/mdir-what-if-a-single-model-could-debate-itself-before-answering-80f`
+- **Hacker News** : soumis par solscan_dev (lien GitHub Pages)
+- **GitHub Pages** : `https://contactn8n410-del.github.io/basetools/article3.html`
+- **Source** : `data/mdir_architecture/article_mdir_architecture.md`
+- **Leçon Medium** : NE JAMAIS coller du markdown brut → utiliser Import HTML depuis URL
+
 ### Article 2 : "550 Hallucinations, Zero Discoveries" (2026-02-21)
 - **Medium** : `https://medium.com/@contact.n8n410/550-hallucinations-zero-discoveries-ab796d4257e4`
 - **DEV.to** : publié sous SolScan Research / contactn8n410del (encodage corrigé)
